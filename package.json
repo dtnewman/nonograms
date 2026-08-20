@@ -1,0 +1,36 @@
+{
+  "name": "nonogram",
+  "version": "0.1.0",
+  "description": "A polished, keyboard-first Nonogram game for the terminal",
+  "type": "module",
+  "bin": {
+    "nonogram": "./src/index.tsx"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "dev": "bun --watch src/index.tsx",
+    "start": "bun src/index.tsx",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit",
+    "build": "bun build src/index.tsx --compile --outfile dist/nonogram"
+  },
+  "keywords": ["nonogram", "picross", "terminal", "tui", "opentui"],
+  "license": "MIT",
+  "engines": {
+    "bun": ">=1.2.0"
+  },
+  "dependencies": {
+    "@opentui/core": "^0.5.4",
+    "@opentui/react": "^0.5.4",
+    "react": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/react": "^19.2.0",
+    "typescript": "^5.9.0"
+  }
+}

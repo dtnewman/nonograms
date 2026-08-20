@@ -12,7 +12,7 @@ export function HomeScreen({ puzzles, selected, games, theme }: HomeScreenProps)
   return (
     <box flexDirection="column" alignItems="center" gap={1}>
       <box flexDirection="column" alignItems="center">
-        <text fg={theme.accent}><strong>NONOGRAM</strong></text>
+        <text fg={theme.accent}><strong>NONOGRAMS</strong></text>
         <text fg={theme.clueCompleted}>Choose a puzzle</text>
       </box>
       <box

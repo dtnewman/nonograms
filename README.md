@@ -2,10 +2,6 @@
 
 > A crisp, keyboard-first Picross game built for the terminal with TypeScript, React, and OpenTUI.
 
-![Nonogram running in the terminal](docs/demo.gif)
-
-Solve hand-made picture puzzles in a focused interface with responsive layouts, satisfied-clue feedback, an unmistakable cursor, and just enough color to stay out of your way.
-
 ## Quick start
 
 With [Bun](https://bun.sh/) 1.2 or newer installed, run:
@@ -15,6 +11,10 @@ bunx nonograms
 ```
 
 Choose a puzzle from the home screen.
+
+![Nonograms running in the terminal](docs/demo.gif)
+
+Solve hand-made picture puzzles in a focused interface with responsive layouts, satisfied-clue feedback, an unmistakable cursor, and just enough color to stay out of your way.
 
 ## Development
 

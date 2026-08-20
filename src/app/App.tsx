@@ -245,7 +245,7 @@ export function App() {
     >
       <box flexDirection="column" alignItems="center" gap={1}>
         <box flexDirection="column" alignItems="center" position="relative" left={Math.ceil(rowClueWidth / 2)}>
-          <text fg={mono.accent}><strong>NONOGRAM</strong></text>
+          <text fg={mono.accent}><strong>NONOGRAMS</strong></text>
           <text fg={mono.clueCompleted}>{game.puzzle.name}  ·  {game.puzzle.width}×{game.puzzle.height}</text>
         </box>
         <Board

@@ -1,8 +1,8 @@
-# Nonogram
+# Nonograms
 
 > A crisp, keyboard-first Picross game built for the terminal with TypeScript, React, and OpenTUI.
 
-<!-- Screenshot coming soon: docs/screenshot.png -->
+![Nonogram running in the terminal](docs/demo.gif)
 
 Solve hand-made picture puzzles in a focused interface with responsive layouts, satisfied-clue feedback, an unmistakable cursor, and just enough color to stay out of your way.
 

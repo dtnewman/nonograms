@@ -10,8 +10,6 @@ With [Bun](https://bun.sh/) 1.2 or newer installed, run:
 bunx nonograms
 ```
 
-Choose a puzzle from the home screen.
-
 ![Nonograms running in the terminal](docs/demo.gif)
 
 ## Development

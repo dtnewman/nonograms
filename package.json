@@ -1,6 +1,6 @@
 {
   "name": "nonograms",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A polished, keyboard-first Nonogram game for the terminal",
   "type": "module",
   "bin": {
@@ -18,7 +18,13 @@
     "typecheck": "tsc --noEmit",
     "build": "bun build src/index.tsx --compile --outfile dist/nonogram"
   },
-  "keywords": ["nonogram", "picross", "terminal", "tui", "opentui"],
+  "keywords": [
+    "nonogram",
+    "picross",
+    "terminal",
+    "tui",
+    "opentui"
+  ],
   "license": "MIT",
   "engines": {
     "bun": ">=1.2.0"

@@ -13,8 +13,9 @@ export function StatusBar({ filled, target, elapsed, theme, narrow }: StatusBarP
     <box flexDirection="column" alignItems="center">
       <text fg={theme.clueCompleted}>Filled <span fg={theme.foreground}>{filled}/{target}</span>  ·  Time <span fg={theme.foreground}>{elapsed}</span></text>
       <text fg={theme.clueCompleted}>
-        {narrow ? "←↑↓→/hjkl move · Space fill · x mark · c clear · r reset · n next · q quit" : "← ↑ ↓ → / h j k l  move   Space  fill   x  mark   Backspace  clear   r  restart   n  next   q  quit"}
+        {narrow ? "Arrows/hjkl move · Space fill · x mark" : "← ↑ ↓ → / h j k l  move   Space  fill   x  mark   Backspace  clear   r  restart   t  tutorial   q/Esc  home"}
       </text>
+      {narrow && <text fg={theme.clueCompleted}>c clear · r reset · t tutorial · q/Esc home</text>}
     </box>
   )
 }

@@ -16,8 +16,7 @@ const renderer = await createCliRenderer({
   backgroundColor: mono.background,
   exitOnCtrlC: true,
   clearOnShutdown: true,
-  useMouse: false,
+  useMouse: true,
 })
 
 createRoot(renderer).render(<App initialPuzzleIndex={initialPuzzleIndex()} />)
-

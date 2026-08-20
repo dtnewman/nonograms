@@ -3,7 +3,7 @@ import type { Theme } from "../theme"
 interface ColumnCluesProps {
   clues: number[][]
   completed: boolean[]
-  activeColumn: number
+  activeColumn: number | null
   leftPadding: number
   theme: Theme
 }
@@ -32,4 +32,3 @@ export function ColumnClues({ clues, completed, activeColumn, leftPadding, theme
     </box>
   )
 }
-

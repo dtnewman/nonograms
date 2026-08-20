@@ -21,7 +21,7 @@ bun install
 bun start
 ```
 
-Choose a built-in size with `bun start --size=5`, `--size=10`, or `--size=15`. The default is 10×10.
+Choose a puzzle from the home screen. `--size=5`, `--size=10`, or `--size=15` selects which puzzle is highlighted initially; the default is 10×10.
 
 ## Controls
 
@@ -30,10 +30,12 @@ Choose a built-in size with `bun start --size=5`, `--size=10`, or `--size=15`. T
 | Arrow keys or `h` `j` `k` `l` | Move cursor |
 | `Space` | Toggle filled |
 | `x` | Toggle definitely empty |
+| Left click / right click | Toggle filled / definitely empty |
 | `Backspace`, `Delete`, or `c` | Clear cell |
 | `r` | Restart puzzle |
 | `n` | Next puzzle |
-| `q` or `Esc` | Quit |
+| `t` | Open or close the tutorial |
+| `q` or `Esc` | Return home; from home, open the quit confirmation; in the confirmation, cancel |
 
 ## Development
 
@@ -46,6 +48,8 @@ bun run typecheck
 
 The game model under `src/game` has no rendering dependencies. Puzzle solutions live in `src/puzzles`, and their clues are derived automatically. UI colors are centralized in `src/theme`, ready for additional palettes.
 
+Puzzle progress is saved automatically in the operating system's app-data location under a `nonograms` folder (`~/Library/Application Support/nonograms` on macOS, `%LOCALAPPDATA%\nonograms` on Windows, or `$XDG_STATE_HOME/nonograms` on Linux).
+
 ## Build
 
 Create a standalone executable for the current platform:
@@ -56,4 +60,3 @@ bun run build
 ```
 
 The GitHub Actions workflow verifies types, tests, and compilation. Platform release binaries and a Homebrew tap can be layered on without changing the application entry point.
-

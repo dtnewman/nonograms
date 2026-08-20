@@ -8,20 +8,19 @@ Solve hand-made picture puzzles in a focused interface with responsive layouts, 
 
 ## Quick start
 
-Requires [Bun](https://bun.sh/) 1.2 or newer.
+With [Bun](https://bun.sh/) 1.2 or newer installed, run:
 
 ```bash
-npx nonogram
+bunx nonograms
 ```
 
-Until the package is published, run the repository directly:
+Choose a puzzle from the home screen. To highlight a puzzle size initially, pass `--size=5`, `--size=10`, or `--size=15`:
 
 ```bash
-bun install
-bun start
+bunx nonograms --size=5
 ```
 
-Choose a puzzle from the home screen. `--size=5`, `--size=10`, or `--size=15` selects which puzzle is highlighted initially; the default is 10×10.
+The default is 10×10.
 
 ## Controls
 

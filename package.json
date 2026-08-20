@@ -1,10 +1,10 @@
 {
-  "name": "nonogram",
+  "name": "nonograms",
   "version": "0.1.0",
   "description": "A polished, keyboard-first Nonogram game for the terminal",
   "type": "module",
   "bin": {
-    "nonogram": "./src/index.tsx"
+    "nonograms": "./src/index.tsx"
   },
   "files": [
     "src",

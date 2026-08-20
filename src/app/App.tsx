@@ -5,7 +5,7 @@ import { CompletionModal } from "../components/CompletionModal"
 import { HomeScreen } from "../components/HomeScreen"
 import { QuitModal } from "../components/QuitModal"
 import { StatusBar } from "../components/StatusBar"
-import { TutorialModal } from "../components/TutorialModal"
+import { TutorialModal, tutorialPageCount } from "../components/TutorialModal"
 import { createGameState, moveCursor, updateCell } from "../game/state"
 import { loadSavedGames, saveGames } from "../game/persistence"
 import { countFilled, solutionFilledCount } from "../game/validation"
@@ -23,10 +23,10 @@ function isSpaceKey(key: { name: string; sequence: string; code?: string }): boo
   return key.name === "space" || key.sequence === " " || key.code === "Space"
 }
 
-export function App({ initialPuzzleIndex = 1 }: { initialPuzzleIndex?: number }) {
+export function App() {
   const renderer = useRenderer()
   const dimensions = useTerminalDimensions()
-  const [puzzleIndex, setPuzzleIndex] = useState(Math.min(initialPuzzleIndex, puzzles.length - 1))
+  const [puzzleIndex, setPuzzleIndex] = useState(0)
   const [savedGames, setSavedGames] = useState<Record<string, GameState>>(() => loadSavedGames(puzzles))
   const [game, setGame] = useState<GameState>(() => savedGames[puzzles[puzzleIndex]!.id] ?? createGameState(puzzles[puzzleIndex]!))
   const [now, setNow] = useState(Date.now())
@@ -36,6 +36,12 @@ export function App({ initialPuzzleIndex = 1 }: { initialPuzzleIndex?: number })
   const [restartConfirmation, setRestartConfirmation] = useState(false)
   const [quitChoice, setQuitChoice] = useState<"yes" | "no">("yes")
   const [tutorialOpen, setTutorialOpen] = useState(false)
+  const [tutorialPage, setTutorialPage] = useState(0)
+
+  const openTutorial = () => {
+    setTutorialPage(0)
+    setTutorialOpen(true)
+  }
 
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 1000)
@@ -66,7 +72,16 @@ export function App({ initialPuzzleIndex = 1 }: { initialPuzzleIndex?: number })
 
   useKeyboard((key) => {
     if (tutorialOpen) {
-      if (["t", "q", "escape", "return", "enter"].includes(key.name)) setTutorialOpen(false)
+      if (["t", "q", "escape"].includes(key.name)) {
+        setTutorialOpen(false)
+      } else if (key.name === "left" || key.name === "h") {
+        setTutorialPage((current) => Math.max(0, current - 1))
+      } else if (key.name === "right" || key.name === "l") {
+        setTutorialPage((current) => Math.min(tutorialPageCount - 1, current + 1))
+      } else if (key.name === "return" || key.name === "enter") {
+        if (tutorialPage === tutorialPageCount - 1) setTutorialOpen(false)
+        else setTutorialPage((current) => current + 1)
+      }
       return
     }
 
@@ -99,7 +114,7 @@ export function App({ initialPuzzleIndex = 1 }: { initialPuzzleIndex?: number })
 
     if (screen === "home") {
       if (key.name === "t") {
-        setTutorialOpen(true)
+        openTutorial()
       } else if (key.name === "q" || key.name === "escape") {
         setQuitChoice("yes")
         setQuitConfirmation(true)
@@ -108,7 +123,7 @@ export function App({ initialPuzzleIndex = 1 }: { initialPuzzleIndex?: number })
       } else if (key.name === "down" || key.name === "j") {
         setHomeSelection((current) => (current + 1) % (puzzles.length + 1))
       } else if (key.name === "return" || key.name === "enter" || key.name === "space") {
-        if (homeSelection === 0) setTutorialOpen(true)
+        if (homeSelection === 0) openTutorial()
         else openPuzzle(homeSelection - 1)
       }
       return
@@ -118,7 +133,7 @@ export function App({ initialPuzzleIndex = 1 }: { initialPuzzleIndex?: number })
       up: "up", k: "up", down: "down", j: "down", left: "left", h: "left", right: "right", l: "right",
     }
     if (key.name === "t") {
-      setTutorialOpen(true)
+      openTutorial()
       return
     }
     if (key.name === "q" || key.name === "escape") {
@@ -209,7 +224,7 @@ export function App({ initialPuzzleIndex = 1 }: { initialPuzzleIndex?: number })
             top={Math.max(1, Math.floor((dimensions.height - 19) / 2))}
             left={Math.max(0, Math.floor((dimensions.width - 56) / 2))}
           >
-            <TutorialModal theme={mono} />
+            <TutorialModal theme={mono} page={tutorialPage} />
           </box>
         )}
       </box>
@@ -270,7 +285,7 @@ export function App({ initialPuzzleIndex = 1 }: { initialPuzzleIndex?: number })
           top={Math.max(1, Math.floor((dimensions.height - 19) / 2))}
           left={Math.max(0, Math.floor((dimensions.width - 56) / 2))}
         >
-          <TutorialModal theme={mono} />
+          <TutorialModal theme={mono} page={tutorialPage} />
         </box>
       )}
       {restartConfirmation && (

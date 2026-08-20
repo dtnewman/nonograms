@@ -14,27 +14,7 @@ With [Bun](https://bun.sh/) 1.2 or newer installed, run:
 bunx nonograms
 ```
 
-Choose a puzzle from the home screen. To highlight a puzzle size initially, pass `--size=5`, `--size=10`, or `--size=15`:
-
-```bash
-bunx nonograms --size=5
-```
-
-The default is 10×10.
-
-## Controls
-
-| Key | Action |
-| --- | --- |
-| Arrow keys or `h` `j` `k` `l` | Move cursor |
-| `Space` | Toggle filled |
-| `x` | Toggle definitely empty |
-| Left click / right click | Toggle filled / definitely empty |
-| `Backspace`, `Delete`, or `c` | Clear cell |
-| `r` | Restart puzzle |
-| `n` | Next puzzle |
-| `t` | Open or close the tutorial |
-| `q` or `Esc` | Return home; from home, open the quit confirmation; in the confirmation, cancel |
+Choose a puzzle from the home screen.
 
 ## Development
 

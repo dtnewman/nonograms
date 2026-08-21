@@ -6,9 +6,10 @@ interface HomeScreenProps {
   selected: number
   games: Record<string, GameState>
   theme: Theme
+  notice?: string
 }
 
-export function HomeScreen({ puzzles, selected, games, theme }: HomeScreenProps) {
+export function HomeScreen({ puzzles, selected, games, theme, notice }: HomeScreenProps) {
   return (
     <box flexDirection="column" alignItems="center" gap={1}>
       <box flexDirection="column" alignItems="center">
@@ -24,18 +25,13 @@ export function HomeScreen({ puzzles, selected, games, theme }: HomeScreenProps)
         flexDirection="column"
         padding={1}
       >
-        <text bg={selected === 0 ? theme.cursor : theme.panel}>
-          <span fg={selected === 0 ? theme.background : theme.accent}>
-            {selected === 0 ? "› " : "  "}{"How to play".padEnd(22)}{"Tutorial".padStart(7)}
-          </span>
-        </text>
         {puzzles.map((puzzle, index) => {
           const saved = games[puzzle.id]
           const complete = saved?.completedAt !== null && saved?.completedAt !== undefined
           const started = saved?.cells.some((row) => row.some((cell) => cell !== "unknown")) ?? false
           const status = complete ? "Complete" : started ? "In progress" : "Not started"
           const statusColor = complete ? theme.success : started ? theme.accent : theme.clueCompleted
-          const selectedRow = index + 1 === selected
+          const selectedRow = index === selected
 
           return (
             <text key={puzzle.id} bg={selectedRow ? theme.cursor : theme.panel}>
@@ -47,7 +43,24 @@ export function HomeScreen({ puzzles, selected, games, theme }: HomeScreenProps)
           )
         })}
       </box>
-      <text fg={theme.clueCompleted}>↑ ↓ / j k select  ·  Enter open  ·  t tutorial  ·  q/Esc quit</text>
+      <box
+        width={58}
+        border
+        borderStyle="single"
+        borderColor={selected === puzzles.length ? theme.accent : theme.grid}
+        backgroundColor={theme.panel}
+        paddingLeft={1}
+        paddingRight={1}
+      >
+        <text bg={selected === puzzles.length ? theme.cursor : theme.panel}>
+          <span fg={selected === puzzles.length ? theme.background : theme.accent}>
+            {selected === puzzles.length ? "› " : "  "}<strong>Create a puzzle</strong>{"Manual or AI".padStart(31)}
+          </span>
+        </text>
+      </box>
+      <text fg={theme.accent}><strong>New here? Press t for How to Play</strong></text>
+      {notice && <text fg={theme.accent}>{notice}</text>}
+      <text fg={theme.clueCompleted}>↑ ↓ / j k select · Enter open · u sync community · q/Esc quit</text>
     </box>
   )
 }

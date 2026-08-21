@@ -9,11 +9,15 @@ interface ProgressFile {
 }
 
 export function progressFilePath(): string {
-  if (platform() === "darwin") return join(homedir(), "Library", "Application Support", "nonograms", "progress.json")
+  return join(appDataDirectory(), "progress.json")
+}
+
+export function appDataDirectory(): string {
+  if (platform() === "darwin") return join(homedir(), "Library", "Application Support", "nonograms")
   if (platform() === "win32") {
-    return join(process.env.LOCALAPPDATA ?? join(homedir(), "AppData", "Local"), "nonograms", "progress.json")
+    return join(process.env.LOCALAPPDATA ?? join(homedir(), "AppData", "Local"), "nonograms")
   }
-  return join(process.env.XDG_STATE_HOME ?? join(homedir(), ".local", "state"), "nonograms", "progress.json")
+  return join(process.env.XDG_STATE_HOME ?? join(homedir(), ".local", "state"), "nonograms")
 }
 
 function validCells(value: unknown, puzzle: Puzzle): value is CellState[][] {

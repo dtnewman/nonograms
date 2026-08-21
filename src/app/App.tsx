@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react"
 import { useKeyboard, useRenderer, useTerminalDimensions } from "@opentui/react"
 import { Board } from "../components/Board"
 import { CompletionModal } from "../components/CompletionModal"
+import { CreatorScreen } from "../components/CreatorScreen"
 import { HomeScreen } from "../components/HomeScreen"
 import { QuitModal } from "../components/QuitModal"
 import { StatusBar } from "../components/StatusBar"
@@ -10,7 +11,8 @@ import { createGameState, moveCursor, updateCell } from "../game/state"
 import { loadSavedGames, saveGames } from "../game/persistence"
 import { countFilled, solutionFilledCount } from "../game/validation"
 import type { Direction, GameState } from "../game/types"
-import { puzzles } from "../puzzles"
+import { puzzles as builtInPuzzles } from "../puzzles"
+import { loadCommunityPuzzles, loadCustomPuzzles, updateCommunityPuzzles } from "../puzzles/storage"
 import { mono } from "../theme"
 
 function formatElapsed(milliseconds: number): string {
@@ -26,11 +28,16 @@ function isSpaceKey(key: { name: string; sequence: string; code?: string }): boo
 export function App() {
   const renderer = useRenderer()
   const dimensions = useTerminalDimensions()
+  const [puzzles, setPuzzles] = useState(() => {
+    const all = [...builtInPuzzles, ...loadCommunityPuzzles(), ...loadCustomPuzzles()]
+    return all.filter((puzzle, index) => all.findIndex(({ id }) => id === puzzle.id) === index)
+  })
+  const [homeNotice, setHomeNotice] = useState("")
   const [puzzleIndex, setPuzzleIndex] = useState(0)
   const [savedGames, setSavedGames] = useState<Record<string, GameState>>(() => loadSavedGames(puzzles))
   const [game, setGame] = useState<GameState>(() => savedGames[puzzles[puzzleIndex]!.id] ?? createGameState(puzzles[puzzleIndex]!))
   const [now, setNow] = useState(Date.now())
-  const [screen, setScreen] = useState<"home" | "game">("home")
+  const [screen, setScreen] = useState<"home" | "game" | "creator">("home")
   const [homeSelection, setHomeSelection] = useState(0)
   const [quitConfirmation, setQuitConfirmation] = useState(false)
   const [restartConfirmation, setRestartConfirmation] = useState(false)
@@ -112,9 +119,23 @@ export function App() {
       return
     }
 
+    if (screen === "creator") {
+      if ((dimensions.width < 70 || dimensions.height < 23) && (key.name === "q" || key.name === "escape")) setScreen("home")
+      return
+    }
+
     if (screen === "home") {
       if (key.name === "t") {
         openTutorial()
+      } else if (key.name === "u") {
+        setHomeNotice("Syncing community puzzles…")
+        void updateCommunityPuzzles().then((community) => {
+          const custom = loadCustomPuzzles()
+          const all = [...builtInPuzzles, ...community, ...custom]
+          setPuzzles(all.filter((puzzle, index) => all.findIndex(({ id }) => id === puzzle.id) === index))
+          setHomeSelection(0)
+          setHomeNotice(`Community catalog updated · ${community.length} puzzle${community.length === 1 ? "" : "s"}`)
+        }).catch((error) => setHomeNotice(error instanceof Error ? error.message : "Community sync failed"))
       } else if (key.name === "q" || key.name === "escape") {
         setQuitChoice("yes")
         setQuitConfirmation(true)
@@ -123,8 +144,8 @@ export function App() {
       } else if (key.name === "down" || key.name === "j") {
         setHomeSelection((current) => (current + 1) % (puzzles.length + 1))
       } else if (key.name === "return" || key.name === "enter" || key.name === "space") {
-        if (homeSelection === 0) openTutorial()
-        else openPuzzle(homeSelection - 1)
+        if (homeSelection === puzzles.length) setScreen("creator")
+        else openPuzzle(homeSelection)
       }
       return
     }
@@ -138,7 +159,7 @@ export function App() {
     }
     if (key.name === "q" || key.name === "escape") {
       setScreen("home")
-      setHomeSelection(puzzleIndex + 1)
+      setHomeSelection(puzzleIndex)
       return
     }
     if (key.name === "r") {
@@ -195,6 +216,22 @@ export function App() {
     </box>
   )
 
+  if (screen === "creator") {
+    if (dimensions.width < 70 || dimensions.height < 23) return expandWindow
+    return (
+      <box width="100%" height="100%" alignItems="center" justifyContent="center" backgroundColor={mono.background}>
+        <CreatorScreen
+          theme={mono}
+          onCancel={() => setScreen("home")}
+          onSaved={(puzzle) => {
+            setPuzzles((current) => current.some(({ id }) => id === puzzle.id) ? current : [...current, puzzle])
+            setScreen("home")
+          }}
+        />
+      </box>
+    )
+  }
+
   if (screen === "home") {
     if (homeTooSmall || tutorialTooSmall) return expandWindow
     return (
@@ -206,7 +243,7 @@ export function App() {
         justifyContent="center"
         backgroundColor={mono.background}
       >
-        <HomeScreen puzzles={puzzles} selected={homeSelection} games={savedGames} theme={mono} />
+        <HomeScreen puzzles={puzzles} selected={homeSelection} games={savedGames} theme={mono} notice={homeNotice} />
         {quitConfirmation && (
           <box
             position="absolute"

@@ -9,6 +9,7 @@ const renderer = await createCliRenderer({
   exitOnCtrlC: true,
   clearOnShutdown: true,
   useMouse: true,
+  onDestroy: () => process.exit(0),
 })
 
 createRoot(renderer).render(<App />)

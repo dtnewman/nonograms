@@ -31,12 +31,12 @@ export function CreatorScreen({ disabled = false, theme, onCancel, onSaved }: Cr
   const [name, setName] = useState("")
   const [apiKey, setApiKey] = useState(initialAiSettings.apiKey ?? process.env.OPENROUTER_API_KEY ?? "")
   const [apiKeySource, setApiKeySource] = useState<"environment" | "local">(!initialAiSettings.apiKey && process.env.OPENROUTER_API_KEY ? "environment" : "local")
-  const [model, setModel] = useState(initialAiSettings.model ?? "google/gemini-flash-latest")
+  const [model, setModel] = useState(initialAiSettings.model ?? "")
   const [imageInput, setImageInput] = useState(initialAiSettings.imageInput ?? false)
   const [modelPickerOpen, setModelPickerOpen] = useState(false)
   const [imageModels, setImageModels] = useState<OpenRouterModelOption[]>([])
   const [modelCatalogStatus, setModelCatalogStatus] = useState("Loading image-capable models…")
-  const [editingAiSettings, setEditingAiSettings] = useState(!initialAiSettings.apiKey)
+  const [editingAiSettings, setEditingAiSettings] = useState(!initialAiSettings.apiKey || !initialAiSettings.model)
   const [prompt, setPrompt] = useState("")
   const [hasAiDraft, setHasAiDraft] = useState(false)
   const [status, setStatus] = useState("Draw with Space, or ask AI for a starting point.")
@@ -117,6 +117,11 @@ export function CreatorScreen({ disabled = false, theme, onCancel, onSaved }: Cr
 
   const askAi = async () => {
     if (!apiKey) return setStatus("Enter an OpenRouter API key or set OPENROUTER_API_KEY.")
+    if (!model.trim()) {
+      setEditingAiSettings(true)
+      setFocus("model")
+      return setStatus("Select a model before generating a draft.")
+    }
     if (!prompt.trim()) return setStatus(hasAiDraft ? "Describe what should change in the draft." : "Describe the picture you want AI to create.")
     setEditingAiSettings(false)
     setGenerating(true)
@@ -353,7 +358,9 @@ export function CreatorScreen({ disabled = false, theme, onCancel, onSaved }: Cr
                 </box>
               ) : (
                 <box border borderColor={focus === "model" ? theme.accent : theme.grid} height={3} title=" Model ">
-                  <text fg={focus === "model" ? theme.accent : theme.foreground}>{imageInput ? model : "Other (text-only)"}  ▾</text>
+                  <text fg={focus === "model" ? theme.accent : model ? theme.foreground : theme.clueCompleted}>
+                    {model ? imageInput ? model : "Other (text-only)" : "Select a model"}  ▾
+                  </text>
                 </box>
               )}
               {!modelPickerOpen && !imageInput && (

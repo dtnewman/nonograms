@@ -3,7 +3,7 @@
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { adminSessionValue, isAdmin, sessionCookie, validPassword } from "@/lib/auth"
-import { reviewPuzzle } from "@/lib/db"
+import { renamePuzzle, reviewPuzzle } from "@/lib/db"
 
 export async function login(formData: FormData) {
   if (!validPassword(String(formData.get("password") ?? ""))) {
@@ -24,4 +24,15 @@ export async function moderate(formData: FormData) {
   const decision = String(formData.get("decision") ?? "")
   if (/^[a-z0-9]{8}$/i.test(code) && (decision === "approved" || decision === "rejected")) reviewPuzzle(code, decision)
   redirect("/admin")
+}
+
+export async function rename(formData: FormData) {
+  if (!await isAdmin()) redirect("/admin/login")
+  const code = String(formData.get("code") ?? "")
+  const name = String(formData.get("name") ?? "").trim()
+  if (/^[a-z0-9]{8}$/i.test(code) && name.length >= 1 && name.length <= 60) {
+    renamePuzzle(code, name)
+    redirect(`/admin/puzzles/${code}`)
+  }
+  redirect(`/admin/puzzles/${code}?error=name`)
 }

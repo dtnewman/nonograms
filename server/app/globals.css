@@ -26,4 +26,5 @@ h2 { font-size: 18px; margin: 0 0 5px; }
 form { max-width: 520px; }.field { display: grid; gap: 5px; margin: 14px 0; } input { font: inherit; padding: 9px; border: 1px solid #aaa; }
 button, .button { display: inline-block; font: 700 14px Arial, sans-serif; border: 1px solid #888; background: #eee; color: #222; padding: 9px 14px; cursor: pointer; }
 .danger { color: #8f1717; }.actions { display: flex; gap: 8px; margin-top: 18px; }
+.rename-form { display: grid; gap: 5px; margin-top: 22px; }.rename-form div { display: flex; }.rename-form input { flex: 1; min-width: 0; }.rename-form button { border-left: 0; }.admin-section { margin-top: 32px; }.admin-section > h2 { padding-bottom: 7px; border-bottom: 1px solid var(--line); }
 @media (max-width: 650px) { .layout { grid-template-columns: 1fr; }.brand { min-height: 90px; }.brand a { font-size: 27px; } nav { min-height: 0; border-right: 0; border-bottom: 1px solid var(--line); display: flex; padding: 0 0 12px; }.puzzle { grid-template-columns: 95px 1fr; } }

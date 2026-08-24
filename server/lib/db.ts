@@ -70,3 +70,7 @@ export function listPuzzles(status: PuzzleRecord["status"] = "approved"): Puzzle
 export function reviewPuzzle(code: string, status: "approved" | "rejected"): void {
   db.prepare("UPDATE puzzles SET status = ?, reviewed_at = CURRENT_TIMESTAMP WHERE code = ?").run(status, code)
 }
+
+export function renamePuzzle(code: string, name: string): void {
+  db.prepare("UPDATE puzzles SET name = ? WHERE code = ?").run(name, code)
+}

@@ -10,6 +10,8 @@ SERVICE ?= nonograms
 # NEXT_PUBLIC_SITE_URL, which Next inlines at compile time.
 ENV_FILE ?= $(HOME)/.config/nonograms/server.env
 
+# The build must run under node, not bun: next build imports the API routes,
+# which load better-sqlite3, and bun cannot dlopen it (oven-sh/bun#4290).
 # bun lives under $HOME and is missing from a non-interactive ssh PATH.
 export PATH := $(HOME)/.bun/bin:$(PATH)
 
@@ -18,6 +20,7 @@ deploy:
 	git pull --ff-only
 	cd server && bun install --frozen-lockfile
 	@test -f $(ENV_FILE) || { echo "missing $(ENV_FILE)"; exit 1; }
-	cd server && NEXT_PUBLIC_SITE_URL="$$(sed -n 's/^NEXT_PUBLIC_SITE_URL=//p' $(ENV_FILE))" bun run build
+	cd server && NEXT_PUBLIC_SITE_URL="$$(sed -n 's/^NEXT_PUBLIC_SITE_URL=//p' $(ENV_FILE))" \
+	  node node_modules/next/dist/bin/next build
 	sudo systemctl restart $(SERVICE)
 	@systemctl is-active $(SERVICE)

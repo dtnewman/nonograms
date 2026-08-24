@@ -33,7 +33,7 @@ export async function fetchPuzzleByCode(code: string): Promise<Puzzle> {
 }
 
 export async function fetchCommunityCatalog(): Promise<Puzzle[]> {
-  const response = await fetch(`${baseUrl}/api/puzzles`)
+  const response = await fetch(`${baseUrl}/api/puzzles`, { signal: AbortSignal.timeout(10_000) })
   if (!response.ok) throw new Error(await errorMessage(response))
   const data = await response.json() as { version?: number; puzzles?: unknown[] }
   if (data.version !== 1 || !Array.isArray(data.puzzles)) throw new Error("Server returned an unsupported catalog")

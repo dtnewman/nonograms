@@ -11,7 +11,6 @@ import { createGameState, moveCursor, updateCell } from "../game/state"
 import { loadSavedGames, saveGames } from "../game/persistence"
 import { countFilled, solutionFilledCount } from "../game/validation"
 import type { Direction, GameState } from "../game/types"
-import { puzzles as builtInPuzzles } from "../puzzles"
 import { loadCommunityPuzzles, loadCustomPuzzles, updateCommunityPuzzles } from "../puzzles/storage"
 import { mono } from "../theme"
 import { fetchPuzzleByCode } from "../community-api"
@@ -30,14 +29,14 @@ export function App() {
   const renderer = useRenderer()
   const dimensions = useTerminalDimensions()
   const [puzzles, setPuzzles] = useState(() => {
-    const all = [...builtInPuzzles, ...loadCommunityPuzzles(), ...loadCustomPuzzles()]
+    const all = [...loadCommunityPuzzles(), ...loadCustomPuzzles()]
     return all.filter((puzzle, index) => all.findIndex(({ id }) => id === puzzle.id) === index)
   })
   const [homeNotice, setHomeNotice] = useState("")
   const [codeInput, setCodeInput] = useState<string | null>(null)
   const [puzzleIndex, setPuzzleIndex] = useState(0)
   const [savedGames, setSavedGames] = useState<Record<string, GameState>>(() => loadSavedGames(puzzles))
-  const [game, setGame] = useState<GameState>(() => savedGames[puzzles[puzzleIndex]!.id] ?? createGameState(puzzles[puzzleIndex]!))
+  const [game, setGame] = useState<GameState | null>(() => puzzles[0] ? savedGames[puzzles[0].id] ?? createGameState(puzzles[0]) : null)
   const [now, setNow] = useState(Date.now())
   const [screen, setScreen] = useState<"home" | "game" | "creator">("home")
   const [homeSelection, setHomeSelection] = useState(0)
@@ -58,6 +57,7 @@ export function App() {
   }, [])
 
   useEffect(() => {
+    if (!game) return
     setSavedGames((current) => ({ ...current, [game.puzzle.id]: game }))
   }, [game])
 
@@ -65,7 +65,10 @@ export function App() {
     saveGames(savedGames)
   }, [savedGames])
 
-  const restart = () => setGame(createGameState(puzzles[puzzleIndex]!))
+  const restart = () => {
+    const puzzle = puzzles[puzzleIndex]
+    if (puzzle) setGame(createGameState(puzzle))
+  }
   const openPuzzle = (index = puzzleIndex) => {
     setPuzzleIndex(index)
     const puzzle = puzzles[index]!
@@ -73,6 +76,7 @@ export function App() {
     setScreen("game")
   }
   const nextPuzzle = () => {
+    if (!puzzles.length) return
     const next = (puzzleIndex + 1) % puzzles.length
     const puzzle = puzzles[next]!
     setPuzzleIndex(next)
@@ -96,7 +100,7 @@ export function App() {
 
     if (quitConfirmation) {
       if (key.name === "y" || ((key.name === "return" || key.name === "enter") && quitChoice === "yes")) {
-        saveGames({ ...savedGames, [game.puzzle.id]: game })
+        saveGames(game ? { ...savedGames, [game.puzzle.id]: game } : savedGames)
         renderer.destroy()
       }
       else if (key.name === "n" || key.name === "q" || key.name === "escape"
@@ -150,7 +154,7 @@ export function App() {
         setHomeNotice("Syncing community puzzles…")
         void updateCommunityPuzzles().then((community) => {
           const custom = loadCustomPuzzles()
-          const all = [...builtInPuzzles, ...community, ...custom]
+          const all = [...community, ...custom]
           setPuzzles(all.filter((puzzle, index) => all.findIndex(({ id }) => id === puzzle.id) === index))
           setHomeSelection(0)
           setHomeNotice(`Community catalog updated · ${community.length} puzzle${community.length === 1 ? "" : "s"}`)
@@ -168,6 +172,8 @@ export function App() {
       }
       return
     }
+
+    if (!game) return
 
     const movement: Partial<Record<string, Direction>> = {
       up: "up", k: "up", down: "down", j: "down", left: "left", h: "left", right: "right", l: "right",
@@ -189,32 +195,32 @@ export function App() {
     if (key.name === "n") return nextPuzzle()
     const direction = movement[key.name]
     if (direction) {
-      setGame((current) => ({ ...current, cursor: moveCursor(current.cursor, direction, current.puzzle) }))
+      setGame((current) => current ? { ...current, cursor: moveCursor(current.cursor, direction, current.puzzle) } : current)
       return
     }
     if (isSpaceKey(key)) {
-      if (!key.repeated) setGame((current) => updateCell(current, "fill"))
+      if (!key.repeated) setGame((current) => current ? updateCell(current, "fill") : current)
     } else if (key.name === "x") {
-      setGame((current) => updateCell(current, "mark"))
+      setGame((current) => current ? updateCell(current, "mark") : current)
     }
     else if (key.name === "backspace" || key.name === "delete" || key.name === "c") {
-      setGame((current) => updateCell(current, "clear"))
+      setGame((current) => current ? updateCell(current, "clear") : current)
     }
   })
 
-  const target = useMemo(() => solutionFilledCount(game.puzzle), [game.puzzle])
-  const elapsed = formatElapsed((game.completedAt ?? now) - game.startedAt)
-  const maxColumnDepth = Math.max(...game.puzzle.columnClues.map((clue) => clue.length))
-  const rowClueWidth = Math.max(...game.puzzle.rowClues.map((clue) => clue.join(" ").length)) + 2
-  const roomyHeight = maxColumnDepth + game.puzzle.height * 2 + 10
-  const compactHeight = maxColumnDepth + game.puzzle.height + Math.floor((game.puzzle.height - 1) / 5) + 12
-  const minimumWidth = Math.max(46, rowClueWidth + game.puzzle.width * 3 + 1)
+  const target = useMemo(() => game ? solutionFilledCount(game.puzzle) : 0, [game])
+  const elapsed = game ? formatElapsed((game.completedAt ?? now) - game.startedAt) : "00:00"
+  const maxColumnDepth = game ? Math.max(...game.puzzle.columnClues.map((clue) => clue.length)) : 0
+  const rowClueWidth = game ? Math.max(...game.puzzle.rowClues.map((clue) => clue.join(" ").length)) + 2 : 0
+  const roomyHeight = game ? maxColumnDepth + game.puzzle.height * 2 + 10 : 0
+  const compactHeight = game ? maxColumnDepth + game.puzzle.height + Math.floor((game.puzzle.height - 1) / 5) + 12 : 0
+  const minimumWidth = game ? Math.max(46, rowClueWidth + game.puzzle.width * 3 + 1) : 0
   const compact = dimensions.height < roomyHeight
   const narrow = dimensions.width < 116
   const gameTooSmall = dimensions.width < minimumWidth
     || dimensions.height < compactHeight
     || (compact && dimensions.width < 53)
-    || (game.completedAt !== null && dimensions.width < 56)
+    || (game !== null && game.completedAt !== null && dimensions.width < 56)
   const homeTooSmall = dimensions.width < 68 || dimensions.height < puzzles.length + 10
   const tutorialTooSmall = tutorialOpen && (dimensions.width < 60 || dimensions.height < 21)
 
@@ -293,6 +299,8 @@ export function App() {
     )
   }
 
+  if (!game) return expandWindow
+
   if (gameTooSmall || tutorialTooSmall) return expandWindow
 
   return (
@@ -318,6 +326,7 @@ export function App() {
           completed={game.completedAt !== null}
           onCellAction={(row, col, action) => {
             setGame((current) => {
+              if (!current) return current
               if (current.completedAt !== null) return current
               const updated = updateCell({ ...current, cursor: { row, col } }, action)
               return { ...updated, cursor: current.cursor }

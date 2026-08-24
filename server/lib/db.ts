@@ -3,6 +3,7 @@ import { mkdirSync } from "node:fs"
 import { dirname, resolve } from "node:path"
 import { randomBytes } from "node:crypto"
 import type { PuzzleDocument, PuzzleRecord } from "./types"
+import { officialPuzzles } from "./official-puzzles"
 
 const databasePath = resolve(process.env.DATABASE_PATH ?? "./data/nonograms.db")
 mkdirSync(dirname(databasePath), { recursive: true })
@@ -21,6 +22,11 @@ db.exec(`
   );
   CREATE INDEX IF NOT EXISTS puzzles_status_created ON puzzles(status, created_at DESC);
 `)
+
+const seedOfficialPuzzle = db.prepare("INSERT OR IGNORE INTO puzzles (code, name, author, rows_json, status, reviewed_at) VALUES (?, ?, ?, ?, 'approved', CURRENT_TIMESTAMP)")
+db.transaction(() => {
+  for (const puzzle of officialPuzzles) seedOfficialPuzzle.run(puzzle.code, puzzle.name, "Nonograms", JSON.stringify(puzzle.rows))
+})()
 
 type Row = { code: string; name: string; author: string | null; rows_json: string; status: PuzzleRecord["status"]; created_at: string; reviewed_at: string | null }
 const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"

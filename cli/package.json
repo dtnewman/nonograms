@@ -7,9 +7,7 @@
     "nonograms": "./src/index.tsx"
   },
   "files": [
-    "src",
-    "README.md",
-    "LICENSE"
+    "src"
   ],
   "scripts": {
     "dev": "bun --watch src/index.tsx",

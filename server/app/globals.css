@@ -10,7 +10,7 @@ header { border-bottom: 1px solid var(--line); background: linear-gradient(100de
 .layout { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 26px; padding-top: 26px; }
 nav { border-right: 1px solid var(--line); min-height: calc(100vh - 142px); padding-right: 16px; }
 nav a { display: block; padding: 8px 10px; color: #333; font-weight: 700; }
-nav a:first-child { background: #eee; }
+nav a[aria-current="page"] { background: #eee; }
 main { padding-bottom: 60px; }
 h1 { margin: 0 0 10px; font-size: 27px; font-weight: 500; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
 h2 { font-size: 18px; margin: 0 0 5px; }

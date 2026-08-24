@@ -18,7 +18,7 @@ The creator can ask an image-capable model available through [OpenRouter](https:
 
 Press `p` in the creator to submit the current puzzle to the community server for review. The server returns an eight-character, case-insensitive code. After approval, press `g` on the home screen to load that puzzle directly by code.
 
-Press `u` on the home screen to download and validate the current community catalog. The last valid catalog is cached locally, so downloaded puzzles remain available offline and a failed update cannot replace it. Set `NONOGRAMS_SERVER_URL` to override the default `https://nonograms.exe.xyz` server during development.
+Press `u` on the home screen to download and validate the current community catalog. The last valid catalog is cached locally, so downloaded puzzles remain available offline and a failed update cannot replace it. Set `NONOGRAMS_SERVER_URL` to override the default `https://nonograms.exchange` server during development.
 
 ## Build the CLI
 

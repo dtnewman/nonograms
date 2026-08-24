@@ -1,7 +1,7 @@
 import { parsePuzzleDocument, type PuzzleDocument } from "./puzzles"
 import type { Puzzle } from "./game/types"
 
-const baseUrl = (process.env.NONOGRAMS_SERVER_URL ?? "https://nonograms.exe.xyz").replace(/\/$/, "")
+const baseUrl = (process.env.NONOGRAMS_SERVER_URL ?? "https://nonograms.exchange").replace(/\/$/, "")
 
 async function errorMessage(response: Response): Promise<string> {
   try {

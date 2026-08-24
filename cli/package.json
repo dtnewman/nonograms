@@ -1,6 +1,6 @@
 {
   "name": "nonograms",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "description": "A polished, keyboard-first Nonogram game for the terminal",
   "type": "module",
   "bin": {

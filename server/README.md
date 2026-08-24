@@ -14,7 +14,7 @@ Set `ADMIN_PASSWORD` and a long random `SESSION_SECRET`, then visit `/admin`. If
 
 ## Production
 
-The app uses Next.js standalone output. Mount persistent storage and point `DATABASE_PATH` at it; a default container filesystem is not durable on many hosts. Set `NEXT_PUBLIC_SITE_URL` to the final `https://…exe.xyz` origin. Resend must have `foobar.dev` verified before it will send from `noreply@foobar.dev`.
+The app uses Next.js standalone output. Mount persistent storage and point `DATABASE_PATH` at it; a default container filesystem is not durable on many hosts. Set `NEXT_PUBLIC_SITE_URL` to the public origin (`https://nonograms.exchange`). Resend must have `foobar.dev` verified before it will send from `noreply@foobar.dev`.
 
 API endpoints:
 

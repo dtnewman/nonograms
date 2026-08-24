@@ -1,0 +1,27 @@
+:root { color-scheme: light; --ink: #222; --muted: #696969; --line: #c8c8c8; --paper: #fff; --wash: #f3f4f7; --blue: #143c9b; --pink: #f4e5eb; }
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; background: var(--paper); color: var(--ink); font-family: Arial, Helvetica, sans-serif; }
+a { color: var(--blue); text-decoration: none; } a:hover { text-decoration: underline; }
+.shell { width: min(1040px, calc(100% - 32px)); margin: 0 auto; }
+header { border-bottom: 1px solid var(--line); background: linear-gradient(100deg, #fff 45%, var(--pink)); }
+.brand { display: flex; align-items: baseline; justify-content: space-between; min-height: 116px; padding: 28px 0 20px; }
+.brand a { color: #292526; font: 900 36px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: -3px; text-shadow: 2px 2px #d8c6cd; }
+.brand small { color: var(--muted); }
+.layout { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 26px; padding-top: 26px; }
+nav { border-right: 1px solid var(--line); min-height: calc(100vh - 142px); padding-right: 16px; }
+nav a { display: block; padding: 8px 10px; color: #333; font-weight: 700; }
+nav a:first-child { background: #eee; }
+main { padding-bottom: 60px; }
+h1 { margin: 0 0 10px; font-size: 27px; font-weight: 500; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+h2 { font-size: 18px; margin: 0 0 5px; }
+.notice { border: 1px solid #4770c9; background: #f2f4ff; padding: 12px; margin: 16px 0; }
+.tabs { display: flex; gap: 4px; background: #eee; width: max-content; padding: 0 8px; margin-bottom: 18px; }
+.tabs a { padding: 8px 10px; }
+.puzzle { display: grid; grid-template-columns: 125px minmax(0, 1fr); gap: 18px; max-width: 620px; padding: 14px 0; border-top: 1px solid var(--line); }
+.preview { display: grid; border: 1px solid #777; aspect-ratio: 1; background: #fafafa; }
+.cell { border: 1px dotted #ddd; min-width: 2px; min-height: 2px; }.cell.on { background: #252525; }
+.meta { margin: 7px 0; color: #333; font-size: 14px; }.code { font: 700 17px ui-monospace, monospace; color: var(--blue); }
+form { max-width: 520px; }.field { display: grid; gap: 5px; margin: 14px 0; } input { font: inherit; padding: 9px; border: 1px solid #aaa; }
+button, .button { display: inline-block; font: 700 14px Arial, sans-serif; border: 1px solid #888; background: #eee; color: #222; padding: 9px 14px; cursor: pointer; }
+.danger { color: #8f1717; }.actions { display: flex; gap: 8px; margin-top: 18px; }
+@media (max-width: 650px) { .layout { grid-template-columns: 1fr; }.brand { min-height: 90px; }.brand a { font-size: 27px; } nav { min-height: 0; border-right: 0; border-bottom: 1px solid var(--line); display: flex; padding: 0 0 12px; }.puzzle { grid-template-columns: 95px 1fr; } }

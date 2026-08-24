@@ -8,9 +8,10 @@ interface HomeScreenProps {
   theme: Theme
   notice?: string
   codeInput?: string | null
+  rowAction?: "open" | "delete"
 }
 
-export function HomeScreen({ puzzles, selected, games, theme, notice, codeInput }: HomeScreenProps) {
+export function HomeScreen({ puzzles, selected, games, theme, notice, codeInput, rowAction = "open" }: HomeScreenProps) {
   return (
     <box flexDirection="column" alignItems="center" gap={1}>
       <box flexDirection="column" alignItems="center">
@@ -39,7 +40,7 @@ export function HomeScreen({ puzzles, selected, games, theme, notice, codeInput 
               <span fg={selectedRow ? theme.background : theme.foreground}>
                 {selectedRow ? "› " : "  "}{puzzle.name.padEnd(22)}{`${puzzle.width}×${puzzle.height}`.padStart(7)}    
               </span>
-              <span fg={selectedRow ? theme.background : statusColor}> ·  {status}</span>
+              <span fg={selectedRow ? theme.background : statusColor}> ·  {selectedRow && rowAction === "delete" ? "Delete?    " : status}</span>
             </text>
           )
         })}
@@ -62,7 +63,7 @@ export function HomeScreen({ puzzles, selected, games, theme, notice, codeInput 
       <text fg={theme.accent}><strong>New here? Press t for How to Play</strong></text>
       {notice && <text fg={theme.accent}>{notice}</text>}
       {codeInput !== null && codeInput !== undefined && <box border borderColor={theme.accent} width={36} height={3} title=" Puzzle code "><text>{codeInput}<span fg={theme.accent}>▌</span></text></box>}
-      <text fg={theme.clueCompleted}>{codeInput !== null && codeInput !== undefined ? "Type 8 characters · Enter load · Esc cancel" : "↑ ↓ / j k select · Enter open · g code · u sync · q/Esc quit"}</text>
+      <text fg={theme.clueCompleted}>{codeInput !== null && codeInput !== undefined ? "Type 8 characters · Enter load · Esc cancel" : "↑ ↓ select · ← open · → delete · Enter confirm · g code · u sync · q/Esc quit"}</text>
     </box>
   )
 }

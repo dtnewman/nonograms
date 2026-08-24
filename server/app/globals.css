@@ -4,9 +4,11 @@ html, body { margin: 0; min-height: 100%; background: var(--paper); color: var(-
 a { color: var(--blue); text-decoration: none; } a:hover { text-decoration: underline; }
 .shell { width: min(1040px, calc(100% - 32px)); margin: 0 auto; }
 header { border-bottom: 1px solid var(--line); background: linear-gradient(100deg, #fff 45%, var(--pink)); }
-.brand { display: flex; align-items: baseline; justify-content: space-between; min-height: 116px; padding: 28px 0 20px; }
-.brand a { color: #292526; font: 900 36px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: -3px; text-shadow: 2px 2px #d8c6cd; }
+.brand { position: relative; display: flex; align-items: baseline; justify-content: space-between; min-height: 116px; padding: 28px 0 20px; }
+.brand > a:first-child { color: #292526; font: 900 36px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: -3px; text-shadow: 2px 2px #d8c6cd; }
 .brand small { color: var(--muted); }
+.brand .github-link { position: absolute; top: 16px; right: 0; display: grid; place-items: center; color: #292526; }
+.github-link svg { width: 22px; height: 22px; }
 .layout { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 26px; padding-top: 26px; }
 nav { border-right: 1px solid var(--line); min-height: calc(100vh - 142px); padding-right: 16px; }
 nav a { display: block; padding: 8px 10px; color: #333; font-weight: 700; }
@@ -27,4 +29,4 @@ form { max-width: 520px; }.field { display: grid; gap: 5px; margin: 14px 0; } in
 button, .button { display: inline-block; font: 700 14px Arial, sans-serif; border: 1px solid #888; background: #eee; color: #222; padding: 9px 14px; cursor: pointer; }
 .danger { color: #8f1717; }.actions { display: flex; gap: 8px; margin-top: 18px; }
 .rename-form { display: grid; gap: 5px; margin-top: 22px; }.rename-form div { display: flex; }.rename-form input { flex: 1; min-width: 0; }.rename-form button { border-left: 0; }.admin-section { margin-top: 32px; }.admin-section > h2 { padding-bottom: 7px; border-bottom: 1px solid var(--line); }
-@media (max-width: 650px) { .layout { grid-template-columns: 1fr; }.brand { min-height: 90px; }.brand a { font-size: 27px; } nav { min-height: 0; border-right: 0; border-bottom: 1px solid var(--line); display: flex; padding: 0 0 12px; }.puzzle { grid-template-columns: 95px 1fr; } }
+@media (max-width: 650px) { .layout { grid-template-columns: 1fr; }.brand { min-height: 90px; }.brand > a:first-child { font-size: 27px; } nav { min-height: 0; border-right: 0; border-bottom: 1px solid var(--line); display: flex; padding: 0 0 12px; }.puzzle { grid-template-columns: 95px 1fr; } }

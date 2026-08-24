@@ -10,7 +10,8 @@ import { saveCustomPuzzle } from "../puzzles/storage"
 import type { Theme } from "../theme"
 import { submitCommunityPuzzle } from "../community-api"
 
-type Focus = "grid" | "name" | "key" | "model" | "modelList" | "customModel" | "settings" | "prompt" | "generate" | "edit"
+type Focus = "grid" | "key" | "model" | "modelList" | "customModel" | "settings" | "prompt" | "generate" | "edit"
+type NamingAction = "save" | "publish"
 
 interface CreatorScreenProps {
   disabled?: boolean
@@ -42,6 +43,7 @@ export function CreatorScreen({ disabled = false, theme, onCancel, onSaved }: Cr
   const [status, setStatus] = useState("Draw with Space, or ask AI for a starting point.")
   const [generating, setGenerating] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [namingAction, setNamingAction] = useState<NamingAction | null>(null)
   const [generationSeconds, setGenerationSeconds] = useState(0)
   const [exitConfirmation, setExitConfirmation] = useState(false)
   const [exitChoice, setExitChoice] = useState<"yes" | "no">("no")
@@ -84,11 +86,6 @@ export function CreatorScreen({ disabled = false, theme, onCancel, onSaved }: Cr
   }
 
   const save = () => {
-    if (!name.trim()) {
-      setFocus("name")
-      setStatus("Could not save: enter a puzzle name.")
-      return
-    }
     try {
       const { puzzle, path } = saveCustomPuzzle(puzzleDocument(name.trim(), grid))
       setStatus(`Saved ${path}`)
@@ -99,10 +96,6 @@ export function CreatorScreen({ disabled = false, theme, onCancel, onSaved }: Cr
   }
 
   const submit = async () => {
-    if (!name.trim()) {
-      setFocus("name")
-      return setStatus("Could not submit: enter a puzzle name.")
-    }
     setSubmitting(true)
     setStatus("Submitting for review…")
     try {
@@ -113,6 +106,22 @@ export function CreatorScreen({ disabled = false, theme, onCancel, onSaved }: Cr
     } finally {
       setSubmitting(false)
     }
+  }
+
+  const requestName = (action: NamingAction) => {
+    setNamingAction(action)
+    setName("")
+  }
+
+  const confirmName = () => {
+    if (!name.trim()) {
+      setStatus(`Could not ${namingAction === "publish" ? "publish" : "save"}: enter a puzzle name.`)
+      return
+    }
+    const action = namingAction
+    setNamingAction(null)
+    if (action === "publish") void submit()
+    else save()
   }
 
   const askAi = async () => {
@@ -167,6 +176,14 @@ export function CreatorScreen({ disabled = false, theme, onCancel, onSaved }: Cr
   })
 
   useKeyboard((key) => {
+    if (namingAction) {
+      if (key.name === "escape") {
+        key.preventDefault()
+        key.stopPropagation()
+        setNamingAction(null)
+      }
+      return
+    }
     if (exitConfirmation) {
       if (key.name === "y" || ((key.name === "return" || key.name === "enter") && exitChoice === "yes")) {
         generationController.current?.abort()
@@ -266,8 +283,7 @@ export function CreatorScreen({ disabled = false, theme, onCancel, onSaved }: Cr
         return
       }
       if (key.name === "tab") {
-        if (focus === "name") setFocus(editingAiSettings ? "model" : "settings")
-        else if (focus === "model") setFocus(imageInput ? "key" : "customModel")
+        if (focus === "model") setFocus(imageInput ? "key" : "customModel")
         else if (focus === "customModel") setFocus("key")
         else if (focus === "settings") setFocus("prompt")
         else if (focus === "prompt") setFocus("generate")
@@ -282,10 +298,9 @@ export function CreatorScreen({ disabled = false, theme, onCancel, onSaved }: Cr
       setExitChoice("no")
       return setExitConfirmation(true)
     }
-    if (key.name === "n") return setFocus("name")
     if (key.name === "a") return setFocus(editingAiSettings ? "model" : "prompt")
-    if (key.name === "s") return save()
-    if (key.name === "p" && !submitting) return void submit()
+    if (key.name === "s") return requestName("save")
+    if (key.name === "p" && !submitting) return requestName("publish")
     if (key.name === "1") return resize(5)
     if (key.name === "2") return resize(10)
     if (key.name === "3") return resize(15)
@@ -311,9 +326,6 @@ export function CreatorScreen({ disabled = false, theme, onCancel, onSaved }: Cr
           <span fg={theme.clueCompleted}>   ·   </span>
           <span fg={size === 15 ? theme.accent : theme.clueCompleted}>{size === 15 ? <strong>3  15×15</strong> : "3  15×15"}</span>
         </text>
-      </box>
-      <box border borderColor={focus === "name" ? theme.accent : theme.grid} width={48} height={3} title=" Name (n) ">
-        <input value={name} focused={focus === "name"} onInput={setName} onSubmit={() => setFocus("grid")} placeholder="Required before saving" />
       </box>
       <box flexDirection="row" gap={2} alignItems="flex-start">
         <box border borderColor={theme.grid} padding={1} flexDirection="column">
@@ -396,8 +408,28 @@ export function CreatorScreen({ disabled = false, theme, onCancel, onSaved }: Cr
           <text fg={status.toLowerCase().includes("fail") || status.toLowerCase().includes("could") ? theme.error : theme.clueCompleted}>{generating ? `◌ ${status} (${generationSeconds}s)` : status}</text>
         </box>
       </box>
-        <text fg={theme.clueCompleted}>Arrows/hjkl move · Space draw · n name · a AI · s save · p publish · q/Esc home</text>
+        <text fg={theme.clueCompleted}>Arrows/hjkl move · Space draw · a AI · s save · p publish · q/Esc home</text>
       </box>
+      {namingAction && (
+        <box
+          position="absolute"
+          zIndex={40}
+          top={Math.max(0, Math.floor((dimensions.height - 7) / 2))}
+          left={Math.max(0, Math.floor((dimensions.width - 50) / 2))}
+          width={50}
+          height={7}
+          border
+          borderColor={theme.accent}
+          backgroundColor={theme.panel}
+          padding={1}
+          flexDirection="column"
+          title={namingAction === "publish" ? " Publish puzzle " : " Save puzzle "}
+        >
+          <text fg={theme.foreground}>What should this puzzle be called?</text>
+          <input value={name} focused onInput={setName} onSubmit={confirmName} placeholder="Puzzle name" />
+          <text fg={theme.clueCompleted}>Enter confirm · Esc cancel</text>
+        </box>
+      )}
       {exitConfirmation && (
         <box
           position="absolute"

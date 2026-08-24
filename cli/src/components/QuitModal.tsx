@@ -7,9 +7,10 @@ export function QuitModal({
 }: {
   theme: Theme
   selected: "yes" | "no"
-  action?: "quit" | "restart"
+  action?: "quit" | "restart" | "delete"
 }) {
   const restarting = action === "restart"
+  const deleting = action === "delete"
   return (
     <box
       width={50}
@@ -21,12 +22,12 @@ export function QuitModal({
       flexDirection="column"
       alignItems="center"
       justifyContent="center"
-      title={restarting ? " RESTART PUZZLE? " : " QUIT NONOGRAM? "}
+      title={deleting ? " DELETE LOCAL PUZZLE? " : restarting ? " RESTART PUZZLE? " : " QUIT NONOGRAM? "}
       titleAlignment="center"
       titleColor={theme.accent}
     >
       <text fg={theme.foreground}>
-        {restarting ? "Erase this puzzle's progress?" : "Are you sure you want to quit?"}
+        {deleting ? "Remove this puzzle and its progress?" : restarting ? "Erase this puzzle's progress?" : "Are you sure you want to quit?"}
       </text>
       <text>
         <span

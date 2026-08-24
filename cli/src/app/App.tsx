@@ -11,7 +11,7 @@ import { createGameState, moveCursor, updateCell } from "../game/state"
 import { loadSavedGames, saveGames } from "../game/persistence"
 import { countFilled, solutionFilledCount } from "../game/validation"
 import type { Direction, GameState } from "../game/types"
-import { loadCommunityPuzzles, loadCustomPuzzles, updateCommunityPuzzles } from "../puzzles/storage"
+import { deletePuzzleLocally, loadCommunityPuzzles, loadCustomPuzzles, updateCommunityPuzzles } from "../puzzles/storage"
 import { mono } from "../theme"
 import { fetchPuzzleByCode } from "../community-api"
 
@@ -40,6 +40,8 @@ export function App() {
   const [now, setNow] = useState(Date.now())
   const [screen, setScreen] = useState<"home" | "game" | "creator">("home")
   const [homeSelection, setHomeSelection] = useState(0)
+  const [homeRowAction, setHomeRowAction] = useState<"open" | "delete">("open")
+  const [deleteConfirmation, setDeleteConfirmation] = useState(false)
   const [quitConfirmation, setQuitConfirmation] = useState(false)
   const [restartConfirmation, setRestartConfirmation] = useState(false)
   const [quitChoice, setQuitChoice] = useState<"yes" | "no">("yes")
@@ -125,6 +127,35 @@ export function App() {
       return
     }
 
+    if (deleteConfirmation) {
+      if (key.name === "y" || ((key.name === "return" || key.name === "enter") && quitChoice === "yes")) {
+        const puzzle = puzzles[homeSelection]
+        if (puzzle) {
+          try {
+            deletePuzzleLocally(puzzle.id)
+            setPuzzles((current) => current.filter(({ id }) => id !== puzzle.id))
+            setSavedGames((current) => {
+              const next = { ...current }
+              delete next[puzzle.id]
+              return next
+            })
+            setHomeSelection((current) => Math.max(0, Math.min(current, puzzles.length - 2)))
+            setHomeNotice(`Deleted ${puzzle.name} locally`)
+          } catch (error) {
+            setHomeNotice(error instanceof Error ? error.message : "Could not delete puzzle")
+          }
+        }
+        setDeleteConfirmation(false)
+        setHomeRowAction("open")
+      } else if (key.name === "n" || key.name === "q" || key.name === "escape"
+        || ((key.name === "return" || key.name === "enter") && quitChoice === "no")) {
+        setDeleteConfirmation(false)
+      } else if (["left", "right", "up", "down", "h", "j", "k", "l", "tab"].includes(key.name)) {
+        setQuitChoice((current) => current === "yes" ? "no" : "yes")
+      }
+      return
+    }
+
     if (screen === "creator") {
       return
     }
@@ -163,11 +194,21 @@ export function App() {
         setQuitChoice("yes")
         setQuitConfirmation(true)
       } else if (key.name === "up" || key.name === "k") {
+        setHomeRowAction("open")
         setHomeSelection((current) => (current - 1 + puzzles.length + 1) % (puzzles.length + 1))
       } else if (key.name === "down" || key.name === "j") {
+        setHomeRowAction("open")
         setHomeSelection((current) => (current + 1) % (puzzles.length + 1))
+      } else if ((key.name === "left" || key.name === "h") && homeSelection < puzzles.length) {
+        setHomeRowAction("open")
+      } else if ((key.name === "right" || key.name === "l") && homeSelection < puzzles.length) {
+        setHomeRowAction("delete")
       } else if (key.name === "return" || key.name === "enter" || key.name === "space") {
         if (homeSelection === puzzles.length) setScreen("creator")
+        else if (homeRowAction === "delete") {
+          setQuitChoice("no")
+          setDeleteConfirmation(true)
+        }
         else openPuzzle(homeSelection)
       }
       return
@@ -274,7 +315,17 @@ export function App() {
         justifyContent="center"
         backgroundColor={mono.background}
       >
-        <HomeScreen puzzles={puzzles} selected={homeSelection} games={savedGames} theme={mono} notice={homeNotice} codeInput={codeInput} />
+        <HomeScreen puzzles={puzzles} selected={homeSelection} games={savedGames} theme={mono} notice={homeNotice} codeInput={codeInput} rowAction={homeRowAction} />
+        {deleteConfirmation && (
+          <box
+            position="absolute"
+            zIndex={20}
+            top={Math.max(1, Math.floor((dimensions.height - 7) / 2))}
+            left={Math.max(0, Math.floor((dimensions.width - 50) / 2))}
+          >
+            <QuitModal theme={mono} selected={quitChoice} action="delete" />
+          </box>
+        )}
         {quitConfirmation && (
           <box
             position="absolute"

@@ -6,7 +6,7 @@ Play nonograms in the terminal. Requires [Bun](https://bun.sh/) 1.2+.
 bunx nonograms
 ```
 
-![Nonograms running in the terminal](cli/docs/demo.gif)
+![Nonograms running in the terminal](tui/docs/demo.gif)
 
 ## Create your own puzzles
 

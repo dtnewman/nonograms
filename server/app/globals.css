@@ -19,6 +19,8 @@ h2 { font-size: 18px; margin: 0 0 5px; }
 .tabs a { padding: 8px 10px; }
 .puzzle { display: grid; grid-template-columns: 125px minmax(0, 1fr); gap: 18px; max-width: 620px; padding: 14px 0; border-top: 1px solid var(--line); }
 .preview { display: grid; border: 1px solid #777; aspect-ratio: 1; background: #fafafa; }
+.preview.concealed { place-items: center; background-color: #fafafa; background-image: linear-gradient(to right, #ddd 1px, transparent 1px), linear-gradient(to bottom, #ddd 1px, transparent 1px); background-size: calc(100% / var(--columns)) calc(100% / var(--rows)); color: #777; font: 700 38px/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
+.preview.concealed span { display: grid; place-items: center; width: 52%; aspect-ratio: 1; border: 1px solid #aaa; background: rgb(255 255 255 / 92%); }
 .cell { border: 1px dotted #ddd; min-width: 2px; min-height: 2px; }.cell.on { background: #252525; }
 .meta { margin: 7px 0; color: #333; font-size: 14px; }.code { font: 700 17px ui-monospace, monospace; color: var(--blue); }
 form { max-width: 520px; }.field { display: grid; gap: 5px; margin: 14px 0; } input { font: inherit; padding: 9px; border: 1px solid #aaa; }

@@ -1,0 +1,25 @@
+# Install as /etc/systemd/system/nonograms.service
+# Replace REPLACE_USER with the account that owns /srv/nonograms (e.g. your ssh user).
+[Unit]
+Description=Nonograms puzzle server (Next.js)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=REPLACE_USER
+WorkingDirectory=/srv/nonograms/server
+EnvironmentFile=/etc/nonograms.env
+Environment=NODE_ENV=production
+# Bind to loopback and put a reverse proxy / tunnel in front.
+# If exe.dev routes traffic straight at the port, change to --hostname 0.0.0.0.
+ExecStart=/usr/bin/env node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 3000
+Restart=always
+RestartSec=2
+# The sqlite file lives outside the git checkout so deploys never touch it.
+StateDirectory=nonograms
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

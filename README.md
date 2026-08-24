@@ -1,14 +1,5 @@
 # Nonograms
 
-> A crisp, keyboard-first terminal app for solving [nonograms](https://en.wikipedia.org/wiki/Nonogram), with a small web service for sharing community puzzles.
-
-The repository contains two applications:
-
-- [`cli/`](cli) — the terminal game, puzzle creator, and community catalog client
-- [`server/`](server) — the Next.js puzzle directory and moderation service
-
-## Quick start
-
 With [Bun](https://bun.sh/) 1.2 or newer installed, run the CLI from npm:
 
 ```bash
@@ -17,21 +8,9 @@ bunx nonograms
 
 ![Nonograms running in the terminal](cli/docs/demo.gif)
 
-## CLI development
+## You can create and contribute puzzles
 
-```bash
-cd cli
-bun install
-bun run dev       # start with file watching
-bun test          # pure game-logic tests
-bun run typecheck
-```
-
-The game model under `cli/src/game` has no rendering dependencies. Puzzle solutions live in `cli/src/puzzles`, and their clues are derived automatically. UI colors are centralized in `cli/src/theme`, ready for additional palettes.
-
-Puzzle progress is saved automatically in the operating system's app-data location under a `nonograms` folder (`~/Library/Application Support/nonograms` on macOS, `%LOCALAPPDATA%\nonograms` on Windows, or `$XDG_STATE_HOME/nonograms` on Linux).
-
-## Create and contribute puzzles
+See https://nonograms.exchange
 
 Choose **Create a puzzle** on the home screen to draw a 5×5, 10×10, or 15×15 puzzle. Saved puzzles use the same versioned JSON format as the built-in and community catalog and live in the app-data folder under `puzzles/`.
 

@@ -1,5 +1,7 @@
-# Install as /etc/systemd/system/nonograms.service
-# Replace REPLACE_USER with the account that owns /srv/nonograms (e.g. your ssh user).
+# Install as /etc/systemd/system/nonograms.service, substituting:
+#   REPLACE_USER -> the account that owns the checkout (e.g. exedev)
+#   REPLACE_HOME -> that account's home directory (e.g. /home/exedev)
+# See "make bootstrap-help" for the exact sed command.
 [Unit]
 Description=Nonograms puzzle server (Next.js)
 After=network-online.target
@@ -8,16 +10,15 @@ Wants=network-online.target
 [Service]
 Type=simple
 User=REPLACE_USER
-WorkingDirectory=/srv/nonograms/server
-EnvironmentFile=/etc/nonograms.env
+WorkingDirectory=REPLACE_HOME/nonograms/server
+EnvironmentFile=REPLACE_HOME/.config/nonograms/server.env
 Environment=NODE_ENV=production
-# Bind to loopback and put a reverse proxy / tunnel in front.
-# If exe.dev routes traffic straight at the port, change to --hostname 0.0.0.0.
-ExecStart=/usr/bin/env node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 3000
+# exe.dev terminates TLS outside the VM and proxies in, so bind all interfaces.
+# Pair with: ssh exe.dev share port <vm> 3000 && ssh exe.dev share set-public <vm>
+# Behind your own reverse proxy on the same host instead? Use 127.0.0.1.
+ExecStart=/usr/bin/env node node_modules/next/dist/bin/next start --hostname 0.0.0.0 --port 3000
 Restart=always
 RestartSec=2
-# The sqlite file lives outside the git checkout so deploys never touch it.
-StateDirectory=nonograms
 NoNewPrivileges=true
 PrivateTmp=true
 

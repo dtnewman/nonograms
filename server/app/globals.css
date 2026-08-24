@@ -14,6 +14,11 @@ nav a:first-child { background: #eee; }
 main { padding-bottom: 60px; }
 h1 { margin: 0 0 10px; font-size: 27px; font-weight: 500; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
 h2 { font-size: 18px; margin: 0 0 5px; }
+.intro h2 { margin-top: 28px; }
+.intro p { max-width: 720px; line-height: 1.5; }
+.intro pre { width: max-content; max-width: 100%; padding: 12px 16px; overflow-x: auto; background: var(--wash); border: 1px solid var(--line); font: 14px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; }
+.demo { display: block; width: min(100%, 800px); height: auto; margin: 20px 0 28px; border: 1px solid var(--line); }
+.community { margin-top: 42px; }
 .notice { border: 1px solid #4770c9; background: #f2f4ff; padding: 12px; margin: 16px 0; }
 .tabs { display: flex; gap: 4px; background: #eee; width: max-content; padding: 0 8px; margin-bottom: 18px; }
 .tabs a { padding: 8px 10px; }
